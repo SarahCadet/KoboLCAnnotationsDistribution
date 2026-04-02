@@ -46,9 +46,6 @@ def main():
 
     cursor = create_cursor(path)
     freq = getAnnotationData(cursor)
-
-    
-    
     draw_graph(list(freq.keys()), list(freq.values()))
 
 
