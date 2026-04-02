@@ -57,6 +57,7 @@ def detectKoboDevice() -> tuple:
     return (False,)
 
 def main():
+    
     kobo_detection = detectKoboDevice()
     kobo_present = kobo_detection[0]
     if (not kobo_present):
