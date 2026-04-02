@@ -2,6 +2,8 @@ import sys
 import sqlite3
 from collections import defaultdict
 from matplotlib import pyplot as plt
+import psutil
+import os
 #writing a script that connects to a given KoboReader.sqlite file
 
 def connect_db(path = "KoboReader.sqlite"):
@@ -9,12 +11,18 @@ def connect_db(path = "KoboReader.sqlite"):
 
 def draw_graph(keys, values):
     # bar-graph
-    plt.bar(keys, values)
+    bars = plt.bar(keys, values)
     plt.xlabel('Type')
     plt.ylabel('Count')
     plt.title('Bookmark Type Frequency')
+
+    # add value labels on top of each bar
+    for bar, value in zip(bars, values):
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height, str(value), ha='center', va='bottom')
+
     plt.tight_layout()
-    plt.savefig("output.rgba")
+    plt.savefig("output.svg")
     plt.show()
 
 def create_cursor(path):
@@ -37,9 +45,25 @@ def getAnnotationData(cursor : sqlite3.Cursor) -> defaultdict:
         row = cursor.fetchone()
     return freq
 
+def detectKoboDevice() -> tuple:
+    """Returns true and the location of the """
+    parts = psutil.disk_partitions()
+    for part in parts:
+        print(psutil.disk_usage(part.mountpoint))
+        koboMetadataFolder = os.path.join(part.mountpoint, ".kobo")
+        if(os.path.exists(koboMetadataFolder)):
+            return (True, os.path.join(koboMetadataFolder, "KoboReader.sqlite"))
+    print(type(parts[0].device))
+    return (False,)
 
 def main():
-    path = "KoboReader.sqlite"
+    kobo_detection = detectKoboDevice()
+    kobo_present = kobo_detection[0]
+    if (not kobo_present):
+        print("kobo device was not detected")
+        return
+    
+    path = kobo_detection[1]
     
     if(len(sys.argv) == 2):
         path = sys.argv[1]
@@ -50,3 +74,4 @@ def main():
 
 
 main()
+#print(detectKoboDevice())
