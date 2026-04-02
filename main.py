@@ -35,14 +35,21 @@ def getAnnotationData(cursor : sqlite3.Cursor) -> defaultdict:
     
     query = "Select Type from Bookmark"
     cursor.execute(query)
+    
+    rows_found = 0
 
     freq = defaultdict(int)
     row = cursor.fetchone()
     while (row is not None):
+        rows_found += 1
         print(row)
         print(row[0])
         freq[row[0]] += 1
         row = cursor.fetchone()
+    
+    if(rows_found == 0):
+        print("either something went wrong and the sqlite table was not found where assumed or... you need to read more :(")
+
     return freq
 
 def detectKoboDevice() -> tuple:
@@ -57,7 +64,7 @@ def detectKoboDevice() -> tuple:
     return (False,)
 
 def main():
-    
+
     kobo_detection = detectKoboDevice()
     kobo_present = kobo_detection[0]
     if (not kobo_present):
