@@ -7,6 +7,16 @@ from matplotlib import pyplot as plt
 def connect_db(path = "KoboReader.sqlite"):
     return sqlite3.connect(path)
 
+def draw_graph(keys, values):
+    # bar-graph
+    plt.bar(keys, values)
+    plt.xlabel('Type')
+    plt.ylabel('Count')
+    plt.title('Bookmark Type Frequency')
+    plt.tight_layout()
+    plt.savefig("output.rgba")
+    plt.show()
+
 def main():
     path = "KoboReader.sqlite"
     
@@ -25,14 +35,7 @@ def main():
         freq[row[0]] += 1
         row = curr.fetchone()
     
-    # bar-graph
-    plt.bar(list(freq.keys()), list(freq.values()))
-    plt.xlabel('Type')
-    plt.ylabel('Count')
-    plt.title('Bookmark Type Frequency')
-    plt.tight_layout()
-    plt.savefig("output.rgba")
-    plt.show()
+    draw_graph(list(freq.keys()), list(freq.values()))
 
 
 main()
