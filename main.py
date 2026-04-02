@@ -17,23 +17,37 @@ def draw_graph(keys, values):
     plt.savefig("output.rgba")
     plt.show()
 
+def create_cursor(path):
+    connection = connect_db(path)
+    cursor = connection.cursor()
+    return cursor
+
+def getAnnotationData(cursor : sqlite3.Cursor) -> defaultdict:
+    """Obtain the types of annotations from the Bookmark table found in KoboReader.sqlite"""
+    
+    query = "Select Type from Bookmark"
+    cursor.execute(query)
+
+    freq = defaultdict(int)
+    row = cursor.fetchone()
+    while (row is not None):
+        print(row)
+        print(row[0])
+        freq[row[0]] += 1
+        row = cursor.fetchone()
+    return freq
+
+
 def main():
     path = "KoboReader.sqlite"
     
     if(len(sys.argv) == 2):
         path = sys.argv[1]
-    
-    connection = connect_db(path)
-    curr = connection.cursor()
 
-    curr.execute("Select Type from Bookmark")
-    freq = defaultdict(int)
-    row = curr.fetchone()
-    while (row is not None):
-        print(row)
-        print(row[0])
-        freq[row[0]] += 1
-        row = curr.fetchone()
+    cursor = create_cursor(path)
+    freq = getAnnotationData(cursor)
+
+    
     
     draw_graph(list(freq.keys()), list(freq.values()))
 
