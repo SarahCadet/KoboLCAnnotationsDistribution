@@ -63,7 +63,7 @@ def detectKoboDevice() -> tuple:
     print(type(parts[0].device))
     return (False,)
 
-def main():
+def main(default_path : str = None): # type: ignore
 
     kobo_detection = detectKoboDevice()
     kobo_present = kobo_detection[0]
@@ -75,11 +75,11 @@ def main():
     
     if(len(sys.argv) == 2):
         path = sys.argv[1]
-
+    
     cursor = create_cursor(path)
     freq = getAnnotationData(cursor)
     draw_graph(list(freq.keys()), list(freq.values()))
 
 
-main()
+#main()
 #print(detectKoboDevice())
